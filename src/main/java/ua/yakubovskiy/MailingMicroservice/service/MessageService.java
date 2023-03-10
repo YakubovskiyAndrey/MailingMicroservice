@@ -1,9 +1,9 @@
 package ua.yakubovskiy.MailingMicroservice.service;
 
-import ua.yakubovskiy.MailingMicroservice.data.MessageData;
+import ua.yakubovskiy.MailingMicroservice.dto.ReceivedMessage;
 
 public interface MessageService {
 
-    String sendSimpleMail(MessageData details);
+    void processReceived(ReceivedMessage message);
 
 }
