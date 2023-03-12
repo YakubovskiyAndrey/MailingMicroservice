@@ -22,14 +22,18 @@ import java.util.List;
 public class MessageServiceImpl implements MessageService{
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
     private String sender;
 
     private final MessageRepository repository;
 
-    private void sendMail(MessageData data) {
+    @Override
+    public void sendMail(MessageData data) {
+        if (data.getEmails() == null || data.getEmails().isEmpty()){
+            throw new IllegalArgumentException("recipient list cannot be empty");
+        }
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(sender);
@@ -43,7 +47,6 @@ public class MessageServiceImpl implements MessageService{
             data.setStatus(MessageStatus.ERROR);
             data.setErrorMessage(e.getClass().getName()+": "+e.getMessage());
         }
-
         repository.save(data);
     }
 
@@ -61,11 +64,10 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Scheduled(fixedRateString = "5000")
-    public void resendMessageProcess() {
+    private void resendMessageProcess() {
         List<MessageData> dataList = repository.searchUnsent();
         if(!dataList.isEmpty()) {
-            dataList.forEach(messageData ->
-                    sendMail(messageData));
+            dataList.forEach(this::sendMail);
         }
     }
 }
