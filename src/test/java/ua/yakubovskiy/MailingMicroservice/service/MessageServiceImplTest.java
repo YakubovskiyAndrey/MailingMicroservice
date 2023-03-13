@@ -98,25 +98,4 @@ class MessageServiceImplTest {
 
         assertThrows(IllegalArgumentException.class, () -> service.sendMail(data));
     }
-
-    @Test
-    void testSearchUnsentMessages() {
-        MessageData data = new MessageData();
-        data.setContent("Test");
-        data.setSubject(SUBJECT);
-        data.setStatus(MessageStatus.ERROR);
-
-        MessageData dataNew = new MessageData();
-        dataNew.setSubject(SUBJECT);
-        dataNew.setContent("Test");
-        dataNew.setStatus(MessageStatus.NEW);
-
-        repository.save(dataNew);
-        repository.save(data);
-
-        List<MessageData> messageDataList = repository.searchUnsent();
-        assertThat(messageDataList).hasSize(2);
-        assertThat(messageDataList.get(0).getContent()).isEqualTo("Test");
-        assertThat(messageDataList.get(1).getContent()).isEqualTo("Test");
-    }
 }

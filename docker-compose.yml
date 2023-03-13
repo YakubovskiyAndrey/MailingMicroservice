@@ -9,6 +9,8 @@ services:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - mailing_s
 
   kafka:
     image: 'bitnami/kafka:latest'
@@ -23,9 +25,11 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+    networks:
+      - mailing_s
 
   elasticsearch:
-    image: elasticsearch:8.6.2
+    image: elasticsearch:8.6.1
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -34,4 +38,33 @@ services:
     volumes:
       - ./data:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - '9200:9200'
+    networks:
+      - mailing_s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VERSION_ID=3
+    container_name: app
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    environment:
+      - MAIL_DRIVER=&MAIL_DRIVER
+      - MAIL_HOST=&MAIL_HOST
+      - MAIL_PORT=&MAIL_PORT
+      - MAIL_USERNAME=&MAIL_USERNAME
+      - MAIL_PASSWORD=&MAIL_PASSWORD
+      - MAIL_ENCRYPTION=&MAIL_ENCRYPTION
+    depends_on:
+      - elasticsearch
+    networks:
+      - mailing_s
+networks:
+  mailing_s:
+      driver: bridge
+
