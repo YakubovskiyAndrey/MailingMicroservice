@@ -29,7 +29,7 @@ services:
       - mailing_s
 
   elasticsearch:
-    image: elasticsearch:8.6.1
+    image: elasticsearch:8.6.2
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -60,11 +60,12 @@ services:
       - MAIL_USERNAME=&MAIL_USERNAME
       - MAIL_PASSWORD=&MAIL_PASSWORD
       - MAIL_ENCRYPTION=&MAIL_ENCRYPTION
+      - elasticsearch.address=localhost:9200
     depends_on:
       - elasticsearch
     networks:
       - mailing_s
+
 networks:
   mailing_s:
-      driver: bridge
-
+    driver: bridge

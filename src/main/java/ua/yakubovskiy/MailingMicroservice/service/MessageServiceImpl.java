@@ -63,7 +63,7 @@ public class MessageServiceImpl implements MessageService{
         sendMail(data);
     }
 
-    @Scheduled(fixedRateString = "5000")
+    @Scheduled(fixedRateString = "300000")
     private void resendMessageProcess() {
         List<MessageData> dataList = repository.searchUnsent();
         if(!dataList.isEmpty()) {
