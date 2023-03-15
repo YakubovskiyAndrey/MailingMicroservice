@@ -20,7 +20,9 @@ services:
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+        #I specify my ip here, if I specify "localhost" or "127.0.0.1" -
+        #I get the error "Caused: java.net.ConnectException: Connection refused"
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://192.168.3.249:9092
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
@@ -49,6 +51,7 @@ services:
       args:
         - VERSION_ID=3
     container_name: app
+    restart: on-failure
     ports:
       - '8080:8080'
     env_file:
@@ -60,7 +63,9 @@ services:
       - MAIL_USERNAME=&MAIL_USERNAME
       - MAIL_PASSWORD=&MAIL_PASSWORD
       - MAIL_ENCRYPTION=&MAIL_ENCRYPTION
-      - elasticsearch.address=localhost:9200
+      - elasticsearch.address=elasticsearch:9200
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - spring.data.elasticsearch.cluster-nodes=elasticsearch:9300
     depends_on:
       - elasticsearch
     networks:
